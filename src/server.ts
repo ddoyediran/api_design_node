@@ -2,7 +2,8 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import router from "./router";
-import { protect } from "./modules/auth";
+import { createJWT, protect } from "./modules/auth";
+import { createNewUser, signin } from "./handlers/user";
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/api", protect, router);
+app.post("/users", createNewUser);
+app.post("/signin", signin);
 
 app.get("/", (req, res) => {
   console.log("hello from express");
