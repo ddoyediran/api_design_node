@@ -44,6 +44,22 @@ export const deleteUpdate = async (req, res) => {
 };
 
 // to create a new update
-const createUpdate = async (req, res) => {};
+const createUpdate = async (req, res) => {
+  const product = await prisma.product.findUnique({
+    where: {
+      id: req.body.id,
+    },
+  });
+
+  if (!product) {
+    return res.status(404).json({ mesaage: "product not found!" });
+  }
+
+  const update = await prisma.update.create({
+    data: req.body,
+  });
+
+  res.json({ data: update });
+};
 
 export const updateUpdate = async (req, res) => {};
