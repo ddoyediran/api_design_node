@@ -29,22 +29,8 @@ export const getOneUpdate = async (req, res) => {
   res.json({ data: updates });
 };
 
-// Delete a specific update
-export const deleteUpdate = async (req, res) => {
-  const deleteUpdated = await prisma.update.delete({
-    where: {
-      //   id_belongsToId: {
-      //     id: req.params.id,
-      //     belongsToId: req.user.id,
-      //   },
-    },
-  });
-
-  res.json({ data: deleteUpdated });
-};
-
 // to create a new update
-const createUpdate = async (req, res) => {
+export const createUpdate = async (req, res) => {
   const product = await prisma.product.findUnique({
     where: {
       id: req.body.id,
@@ -52,7 +38,7 @@ const createUpdate = async (req, res) => {
   });
 
   if (!product) {
-    return res.status(404).json({ mesaage: "product not found!" });
+    return res.status(404).json({ message: "product not found!" });
   }
 
   const update = await prisma.update.create({
@@ -62,4 +48,33 @@ const createUpdate = async (req, res) => {
   res.json({ data: update });
 };
 
-export const updateUpdate = async (req, res) => {};
+// to update a specific update
+export const updateUpdate = async (req, res) => {
+  const products = await prisma.product.findMany({
+    where: {
+      belongsToId: req.user.id,
+    },
+    include: {
+      updates: true,
+    },
+  });
+
+  const updates = products.reduce((allUpdates, product) => {
+    return [...allUpdates, ...product.updates];
+  }, []);
+
+  const match = updates.find((update) => update.id === req.params.id);
+
+  if (!match) {
+    return res.status(404).json({ message: "update not found!" });
+  }
+
+  const updatedUpdate = await prisma.update.update({
+    where: {
+      id: req.params.id,
+    },
+    data: req.body,
+  });
+
+  res.json({ data: updatedUpdate });
+};
