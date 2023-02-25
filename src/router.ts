@@ -7,7 +7,13 @@ import {
   getProducts,
   updateProduct,
 } from "./handlers/product";
-import { getUpdates } from "./handlers/update";
+import {
+  createUpdate,
+  deleteUpdate,
+  getOneUpdate,
+  getUpdates,
+  updateUpdate,
+} from "./handlers/update";
 import { handleInputErrors } from "./modules/middleware";
 // import handleInputErrors from "./modules/middleware";
 
@@ -41,38 +47,24 @@ router.post(
  */
 router.get("/update", getUpdates);
 
-router.get("/update/:id", () => {});
+router.get("/update/:id", getOneUpdate);
 
 router.put(
   "/update/:id",
   body("body").optional(),
   body("title").optional(),
   body("version").optional(),
-  body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]),
-  (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      res.status(400);
-      res.json({ error: errors.array() });
-    }
-  }
+  body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]).optional(),
+  updateUpdate
 );
 
-router.delete("/update/:id", () => {});
+router.delete("/update/:id", deleteUpdate);
 
 router.post(
   "/update",
   body("body").exists().isString(),
   body("title").exists().isString(),
-  (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      res.status(400);
-      res.json({ error: errors.array() });
-    }
-  }
+  createUpdate
 );
 
 /**
