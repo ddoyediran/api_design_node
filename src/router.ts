@@ -64,6 +64,7 @@ router.post(
   "/update",
   body("body").exists().isString(),
   body("title").exists().isString(),
+  body("ProductId").exists().isString(),
   createUpdate
 );
 
